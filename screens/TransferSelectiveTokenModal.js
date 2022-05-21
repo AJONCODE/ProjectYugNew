@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import React from 'react';

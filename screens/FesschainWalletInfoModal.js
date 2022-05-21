@@ -20,7 +20,7 @@ import {
   FontAwesome,
 } from '@expo/vector-icons';
 
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import Clipboard from 'expo-clipboard';
 import { useFocusEffect } from '@react-navigation/native';

@@ -1,6 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Alert, Platform } from 'react-native';
 import Constants from 'expo-constants';

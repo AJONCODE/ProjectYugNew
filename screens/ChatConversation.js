@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 
 import { AntDesign } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from 'expo-clipboard';
 import React from 'react';
 import axios from 'axios';

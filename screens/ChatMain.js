@@ -15,7 +15,7 @@ import {
   View,
 } from 'react-native';
 
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import axios from 'axios';
 import io from 'socket.io-client';

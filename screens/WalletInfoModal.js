@@ -19,7 +19,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { ethers } from 'ethers';
 import etherscan from 'etherscan-api';
 // import AppButton from '../components/AppButton';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   MaterialCommunityIcons,
   AntDesign,

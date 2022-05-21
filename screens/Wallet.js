@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 import AppButton from '../components/AppButton';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 

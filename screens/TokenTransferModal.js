@@ -13,7 +13,7 @@ import {
 import React from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ethers } from 'ethers';
 import etherscan from 'etherscan-api';
 import axios from 'axios';

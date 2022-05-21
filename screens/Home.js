@@ -3,7 +3,7 @@ import { Image, SafeAreaView, StyleSheet, View } from 'react-native';
 import { SliderBox } from 'react-native-image-slider-box';
 
 import AppButton from '../components/AppButton';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import main from '../images/main.png';
 import { useFocusEffect } from '@react-navigation/native';
