@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1054927097356",
+    "project_id": "fesspay-552d2",
+    "storage_bucket": "fesspay-552d2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1054927097356:android:4af4bc649a0fd24c98a829",
+        "android_client_info": {
+          "package_name": "com.fesspay.wallet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1054927097356-e7l742ptusk2hp6meb675vpsc53l6pg9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcm__HKAeRMhoNyuGQFNzkkvJN1Og9w8o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1054927097356-e7l742ptusk2hp6meb675vpsc53l6pg9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
