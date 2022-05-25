@@ -28,11 +28,13 @@ import {
   FontAwesome,
 } from '@expo/vector-icons';
 import React from 'react';
+import { tokenABI } from '../utils/token.abi';
 
 import send from '../images/wallet/send.png';
 import receive from '../images/wallet/receive.png';
 import chat from '../images/wallet/chat.png';
 import ethereum from '../images/wallet/eth.png';
+import bsc from '../images/wallet/binance-logo.png';
 
 import { baseURL } from '../utils/fesschain';
 
@@ -149,13 +151,13 @@ const WalletInfoModal = ({ navigation, route }) => {
 
     await AsyncStorage.setItem('wallets', JSON.stringify(ethereumWalletsObj));
 
-    const notificationToken = await AsyncStorage.getItem('notificationToken');
+    // const notificationToken = await AsyncStorage.getItem('notificationToken');
 
-    await axios.put(`${baseURL.fesspay_server}notification/remove-address`, {
-      notificationToken: JSON.parse(notificationToken),
-      address,
-      walletType: 'ethereum',
-    });
+    // await axios.put(`${baseURL.fesspay_server}notification/remove-address`, {
+    //   notificationToken: JSON.parse(notificationToken),
+    //   address,
+    //   walletType: 'ethereum',
+    // });
 
     Alert.alert('Ethereum Wallet successfully deleted!');
     navigation.popToTop();
@@ -181,7 +183,7 @@ const WalletInfoModal = ({ navigation, route }) => {
 
   const handleEtherscanLink = async () => {
     try {
-      Linking.openURL(`https://etherscan.io/address/${address}`);
+      Linking.openURL(`https://testnet.bscscan.com/address/${address}`);
     } catch (err) {
       console.log('handleEtherscanLink: err: ', err);
     }
@@ -190,11 +192,11 @@ const WalletInfoModal = ({ navigation, route }) => {
   const getBalance = async () => {
     try {
       // mainnet
-      let provider = ethers.getDefaultProvider('homestead');
-
+      //let provider = ethers.getDefaultProvider('homestead');
+      const bscProvider = await new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545/', { name: 'binance-testnet', chainId: 97 })
       console.log('getbalance: address: ', address);
 
-      const balance = await provider.getBalance(address);
+      const balance = await bscProvider.getBalance(address);
       console.log('balance: ', ethers.utils.formatEther(balance));
 
       setWalletBalance(ethers.utils.formatEther(balance).toString());
@@ -212,6 +214,7 @@ const WalletInfoModal = ({ navigation, route }) => {
   const redirectToWalletAssetInfoScreen = (token) => {
     navigation.navigate('WalletAssetInfoModal', {
       ...token,
+      walletAddress: address
     });
   };
 
@@ -236,8 +239,9 @@ const WalletInfoModal = ({ navigation, route }) => {
       const etherscanApi = await etherscan.init(
         'Y52U8S5ZIII2Q58527WT5U3NRPNMMFSPQK',
       );
+      const bscProvider = await new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545/', { name: 'binance-testnet', chainId: 97 })
       const provider = ethers.getDefaultProvider('homestead');
-      wallet = wallet.connect(provider);
+      wallet = wallet.connect(bscProvider);
 
       const tokenArrObj =
         JSON.parse(await AsyncStorage.getItem('tokenArrObj')) || {};
@@ -248,18 +252,18 @@ const WalletInfoModal = ({ navigation, route }) => {
         let tokenInfo = {};
 
         // ABI
-        const contractAbiFragmentResponse = await etherscanApi.contract.getabi(
-          tokenAddress,
-        );
-        const contractAbiFragment = await JSON.parse(
-          contractAbiFragmentResponse.result,
-        );
+        // const contractAbiFragmentResponse = await etherscanApi.contract.getabi(
+        //   tokenAddress,
+        // );
+        // const contractAbiFragment = await JSON.parse(
+        //   contractAbiFragmentResponse.result,
+        // );
         // console.log('contractAbiFragment: ', contractAbiFragment);
 
         // CONTRACT
         const contract = new ethers.Contract(
           tokenAddress,
-          contractAbiFragment,
+          tokenABI,
           wallet,
         );
         // console.log('contract: ', contract);
@@ -280,11 +284,11 @@ const WalletInfoModal = ({ navigation, route }) => {
         //   `api.coingecko.com/api/v3/coins/${symbol}`,
         // );
         // console.info('tokenData: ', tokenData);
-
+       
         tokenInfo = {
           tokenName: tokenName,
           address: tokenAddress,
-          balance: balance.toNumber(),
+          balance: ethers.utils.formatEther(balance).toString(),
           symbol: symbol,
         };
 
@@ -388,7 +392,7 @@ const WalletInfoModal = ({ navigation, route }) => {
             )}
 
             <View style={{ paddingVertical: 5, alignItems: 'center' }}>
-              <Image source={ethereum} style={{ width: 25, height: 40 }} />
+              <Image source={bsc} style={{ width: 40, height: 40 }} />
 
               <Text
                 style={{
@@ -397,7 +401,7 @@ const WalletInfoModal = ({ navigation, route }) => {
                   fontWeight: '700',
                 }}
               >
-                {Number(walletBalance).toFixed(2)}{' '}
+                {Number(walletBalance).toFixed(4)}{' '}
                 <Text
                   style={{
                     color: '#308dd4',
@@ -405,7 +409,7 @@ const WalletInfoModal = ({ navigation, route }) => {
                     fontWeight: '500',
                   }}
                 >
-                  ETH
+                  BSC
                 </Text>
               </Text>
             </View>
@@ -488,7 +492,7 @@ const WalletInfoModal = ({ navigation, route }) => {
               <Text style={{ color: '#4e4e4e' }}>RECEIVE</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={{ flex: 1, alignItems: 'center' }}
               onPress={() =>
                 navigation.navigate('Chat', {
@@ -499,7 +503,7 @@ const WalletInfoModal = ({ navigation, route }) => {
             >
               <Image source={chat} style={{ width: 70, height: 70 }} />
               <Text style={{ color: '#4e4e4e' }}>CHAT</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
 
           <View

@@ -187,15 +187,17 @@ const CreateWalletMnemonicConfirm = ({ navigation, route }) => {
 
       console.info('addAddressBody: ', addAddressBody);
 
-      await axios.put(
-        `${baseURL.fesspay_server}notification/add-address`,
-        addAddressBody,
-      );
+      // await axios.put(
+      //   `${baseURL.fesspay_server}notification/add-address`,
+      //   addAddressBody,
+      // );
 
       setCreateWalletLoading(false);
       await redirectToWallet();
     }
   };
+
+  
 
   const redirectToWallet = React.useCallback(async () => {
     if (await AsyncStorage.getItem('wallets')) {

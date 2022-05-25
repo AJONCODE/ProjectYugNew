@@ -24,6 +24,8 @@ import etherscan from 'etherscan-api';
 import { useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
 
+import { tokenABI } from '../utils/token.abi';
+
 import AppButton from '../components/AppButton';
 import { baseURL } from '../utils/fesschain';
 
@@ -99,11 +101,13 @@ const TransferSelectiveTokenModal = ({ navigation, route }) => {
     try {
       setFetchTokensLoading(true);
       let wallet = new ethers.Wallet(privateKey);
-      const etherscanApi = await etherscan.init(
-        'Y52U8S5ZIII2Q58527WT5U3NRPNMMFSPQK',
-      );
+      // const etherscanApi = await etherscan.init(
+      //   'Y52U8S5ZIII2Q58527WT5U3NRPNMMFSPQK',
+      // );
+      const bscProvider = await new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545/', { name: 'binance-testnet', chainId: 97 })
+
       const provider = ethers.getDefaultProvider('homestead');
-      wallet = wallet.connect(provider);
+      wallet = wallet.connect(bscProvider);
 
       const tokenArrObj =
         JSON.parse(await AsyncStorage.getItem('tokenArrObj')) || {};
@@ -115,17 +119,17 @@ const TransferSelectiveTokenModal = ({ navigation, route }) => {
         let tokenInfo = {};
 
         // ABI
-        const contractAbiFragmentResponse = await etherscanApi.contract.getabi(
-          tokenAddress,
-        );
-        const contractAbiFragment = await JSON.parse(
-          contractAbiFragmentResponse.result,
-        );
+        // const contractAbiFragmentResponse = await etherscanApi.contract.getabi(
+        //   tokenAddress,
+        // );
+        // const contractAbiFragment = await JSON.parse(
+        //   contractAbiFragmentResponse.result,
+        // );
 
         // CONTRACT
         const contract = new ethers.Contract(
           tokenAddress,
-          contractAbiFragment,
+          tokenABI,
           wallet,
         );
         // console.log('contract: ', contract);
@@ -145,7 +149,7 @@ const TransferSelectiveTokenModal = ({ navigation, route }) => {
         tokenInfo = {
           tokenName: tokenName,
           address: tokenAddress,
-          balance: balance.toNumber(),
+          balance: ethers.utils.formatEther(balance).toString(),
           symbol: symbol,
         };
 
@@ -207,30 +211,32 @@ const TransferSelectiveTokenModal = ({ navigation, route }) => {
 
       let wallet = new ethers.Wallet(privateKey);
       let myAddress = walletAddress;
-      const etherscanApi = await etherscan.init(
-        'Y52U8S5ZIII2Q58527WT5U3NRPNMMFSPQK',
-      );
-      // ABI
-      let contractAbiFragmentResponse = await etherscanApi.contract.getabi(
-        tokenAddress,
-      );
-      // console.log('contractAbiFragmentResponse: ', contractAbiFragmentResponse);
-      const contractAbiFragment = await JSON.parse(
-        contractAbiFragmentResponse.result,
-      );
+      // const etherscanApi = await etherscan.init(
+      //   'Y52U8S5ZIII2Q58527WT5U3NRPNMMFSPQK',
+      // );
+      // // ABI
+      // let contractAbiFragmentResponse = await etherscanApi.contract.getabi(
+      //   tokenAddress,
+      // );
+      // // console.log('contractAbiFragmentResponse: ', contractAbiFragmentResponse);
+      // const contractAbiFragment = await JSON.parse(
+      //   contractAbiFragmentResponse.result,
+      // );
       // console.log('contractAbiFragment: ', contractAbiFragment);
 
       // CONTRACT'
       // mainnet
+      const bscProvider = await new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545/', { name: 'binance-testnet', chainId: 97 })
+
       const provider = ethers.getDefaultProvider('homestead');
 
       // testnet
       // const provider = ethers.getDefaultProvider('ropsten');
 
-      wallet = wallet.connect(provider);
+      wallet = wallet.connect(bscProvider);
       const contract = new ethers.Contract(
         tokenAddress,
-        contractAbiFragment,
+        tokenABI,
         wallet,
       );
       // console.log('contract: ', contract);
@@ -243,34 +249,96 @@ const TransferSelectiveTokenModal = ({ navigation, route }) => {
       );
 
       // Send tokens
-      let overrides = {
-        // The maximum units of gas for the transaction to use
-        gasLimit: 23000,
-      };
+      // let overrides = {
+      //   // The maximum units of gas for the transaction to use
+      //   gasLimit: 23000,
+      // };
       const tx = await contract.transfer(
         targetAddressInput,
-        numberOfTokens,
-        overrides,
+        numberOfTokens
       );
       // const tx = await contract.transfer('sdfsdf', numberOfTokens, overrides);
       console.log('tx: ', tx);
 
-      Alert.alert(`Transaction Successfull. Transaction Hash: ${tx}`);
+      //Alert.alert(`Transaction Successfull. Transaction Hash: ${tx}`);
 
       setSendTokenLoading(false);
 
       if (tx) {
-        const result = await axios.post(`${BaseUrl}trxn`, {
-          from: myAddress,
-          to: targetAddressInput,
-          trxnHash: tx,
-          amount: numberOfTokens,
-        });
+        Alert.alert(`Transaction Successfull. Transaction Hash: ${tx.hash}`);
 
-        console.log(
-          `trxn notification result: ${JSON.stringify(result.data, null, 2)}`,
-        );
+        // the object at async storage will be of following structure : 
+
+        // {
+        //   "wallet_address" : {
+        //     "token_address" : {
+        //       "transaction_hash" : {
+        //         .....transaction details to be stored
+        //       }
+        //     }
+        //   }
+        // }
+
+        let transHash = tx.hash; //get transaction hash
+
+        let trxns = JSON.parse(await AsyncStorage.getItem('transactions')) || {}; //get the stored transactions or empty object from storage
+
+        console.log('trxn log1 :', trxns);
+
+
+        if (Object.keys(trxns).length === 0) {
+          let obj = {};
+          let trxn = {};
+
+          trxn[transHash] = {  
+            from: walletAddress,
+            to: targetAddressInput,
+            trxnHash: tx.hash,
+            amount: amount,
+            date: Date.now(),
+          }; //transaction object to be stored against a transaction hash as key
+
+          obj[tokenAddress] = { ...trxn };
+          trxns[walletAddress] = { ...obj }; //transaction object to be stored against a wallet hash as key
+        } else {
+          let obj = trxns[walletAddress]; //get the existing transaction object for a particular wallet
+          let trxn = { ...obj };
+
+          let trxnForAsset = trxn[tokenAddress]; //get the existing transaction object for a particular token
+
+          trxnForAsset[transHash] = {
+            from: walletAddress,
+            to: targetAddressInput,
+            trxnHash: tx.hash,
+            amount: amount,
+            date: Date.now(),
+          };
+
+          obj[tokenAddress] = { ...trxnForAsset }; //add to the existing transaction object for a particular token
+          trxns[walletAddress] = { ...obj }; //add to the existing transaction object for a particular wallet
+        }
+
+
+        console.log('trxn log1 :', trxns);
+
+        await AsyncStorage.setItem('transactions', JSON.stringify(trxns));
+
+      } else {
+        Alert.alert(`Transaction Failed. Transaction Hash: ${tx.hash}`)
       }
+
+      // if (tx) {
+      //   const result = await axios.post(`${BaseUrl}trxn`, {
+      //     from: myAddress,
+      //     to: targetAddressInput,
+      //     trxnHash: tx,
+      //     amount: numberOfTokens,
+      //   });
+
+      //   console.log(
+      //     `trxn notification result: ${JSON.stringify(result.data, null, 2)}`,
+      //   );
+      // }
     } catch (err) {
       console.log('SEND TOKEN: ERROR: ', err.code);
 
@@ -283,6 +351,7 @@ const TransferSelectiveTokenModal = ({ navigation, route }) => {
       setSendTokenLoading(false);
     }
   };
+
 
   React.useEffect(() => {
     (async () => {

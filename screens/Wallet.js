@@ -16,7 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 
-import walletImage from '../images/pay.jpg';
+import walletImage from '../images/logo.png';
 
 const styles = StyleSheet.create({
   containerColor: {
@@ -85,34 +85,23 @@ const styles = StyleSheet.create({
 const Wallet = ({ navigation }) => {
   const [walletListLoading, setWalletListLoading] = React.useState(false);
   const [wallets, setWallets] = React.useState(null);
-  const [fesschainWallets, setFesschainWallets] = React.useState(null);
-  // false -> FESSCHAIN WALLET; true -> NORMAL WALLET
-  const [walletSwitch, setWalletSwitch] = React.useState(false);
 
   const fetchWalletInfo = async () => {
     setWalletListLoading(true);
-    if (!walletSwitch) {
-      let fesschainWalletData = await AsyncStorage.getItem('fesschainWallets');
-      fesschainWalletData = JSON.parse(fesschainWalletData);
-      // console.info('YugWalletData:', fesschainWalletData);
-
-      setFesschainWallets(fesschainWalletData);
-
-      setWalletListLoading(false);
-    } else {
+  
       let walletsData = await AsyncStorage.getItem('wallets');
       walletsData = JSON.parse(walletsData);
       // console.info('walletsData: ', walletsData);
 
       setWallets(walletsData);
       setWalletListLoading(false);
-    }
+    
   };
 
   useFocusEffect(
     React.useCallback(() => {
       fetchWalletInfo();
-    }, [walletSwitch]),
+    }, []),
   );
 
   // const handleTransferModal = () => {
@@ -131,17 +120,7 @@ const Wallet = ({ navigation }) => {
     });
   };
 
-  const handleFesschainWalletInfoModal = (
-    fesschainWalletAddress,
-    fesschainWalletname,
-    fesschainPrivateKey,
-  ) => {
-    navigation.navigate('FesschainWalletInfoModal', {
-      fesschainWalletAddress,
-      fesschainWalletname,
-      fesschainPrivateKey,
-    });
-  };
+
 
   const Item = ({ address, name, privateKey }) => (
     <TouchableOpacity
@@ -162,38 +141,13 @@ const Wallet = ({ navigation }) => {
     </TouchableOpacity>
   );
 
-  const FesschainItem = ({ address, name, privateKey }) => (
-    <TouchableOpacity
-      onPress={() => handleFesschainWalletInfoModal(address, name, privateKey)}
-    >
-      <View style={styles.walletInfo}>
-        <View style={{ alignSelf: 'center' }}>
-          <Image source={walletImage} style={{ width: 70, height: 70 }} />
-        </View>
-        <View style={{ alignSelf: 'center' }}>
-          <Text style={{ fontSize: 22, fontWeight: '500' }}>{name}</Text>
-          <Text style={{ fontSize: 15, fontWeight: '400' }}>
-            {address.slice(0, 4)}...
-            {address.slice(address.length - 12, address.length)}
-          </Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
+
 
   const renderWallet = ({ item }) => (
     <Item
       address={wallets[item].address}
       name={wallets[item].name}
       privateKey={wallets[item].privateKey}
-    />
-  );
-
-  const renderFesschainWallet = ({ item }) => (
-    <FesschainItem
-      address={fesschainWallets[item].address}
-      name={fesschainWallets[item].name}
-      privateKey={fesschainWallets[item].privateKey}
     />
   );
 
@@ -211,57 +165,10 @@ const Wallet = ({ navigation }) => {
               navigation.navigate('CreateWalletModalInWalletScreen')
             }
           />
-
-          <Switch
-            style={{ marginTop: 15 }}
-            trackColor={{ false: '#e5e5e5', true: '#cccccc' }}
-            thumbColor="#166da2"
-            ios_backgroundColor="#cccccc"
-            onValueChange={(value) => setWalletSwitch(value)}
-            value={walletSwitch}
-          />
         </View>
 
-        {!walletSwitch && (
-          <View
-            style={{
-              height: 45,
-              backgroundColor: '#efefef',
-              borderRadius: 10,
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: 5,
-              width: '100%',
-            }}
-          >
-            <Text style={styles.labelText}>Yug Wallets</Text>
-          </View>
-        )}
 
-        {!walletSwitch &&
-          !walletListLoading &&
-          fesschainWallets &&
-          Object.keys(fesschainWallets).length && (
-            <FlatList
-              // columnWrapperStyle={{ justifyContent: 'space-between' }}
-              numColumns={1}
-              data={Object.keys(fesschainWallets) || []}
-              keyExtractor={(item) => item}
-              renderItem={renderFesschainWallet}
-            />
-          )}
-
-        {!walletListLoading &&
-          !walletSwitch &&
-          (!fesschainWallets || !Object.keys(fesschainWallets).length) && (
-            <>
-              <Text style={{ fontSize: 16, fontWeight: '600' }}>
-                No Wallet Found!
-              </Text>
-            </>
-          )}
-
-        {walletSwitch && (
+        { (
           <View
             style={{
               height: 45,
@@ -273,11 +180,11 @@ const Wallet = ({ navigation }) => {
               width: '100%',
             }}
           >
-            <Text style={styles.labelText}>Other Wallets</Text>
+            <Text style={styles.labelText}>Wallets</Text>
           </View>
         )}
 
-        {walletSwitch &&
+        {
           !walletListLoading &&
           wallets &&
           Object.keys(wallets).length && (
@@ -297,8 +204,7 @@ const Wallet = ({ navigation }) => {
             </View>
           )}
 
-        {!walletListLoading &&
-          walletSwitch &&
+        {!walletListLoading  &&
           (!wallets || !Object.keys(wallets).length) && (
             <>
               <Text style={{ fontSize: 16, fontWeight: '600' }}>

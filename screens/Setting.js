@@ -143,7 +143,7 @@ const Setting = ({ navigation }) => {
           </View>
         </View> */}
 
-          <View>
+          {/* <View>
             <View style={styles.groupHeading}>
               <Text style={styles.groupHeadingText}>Policy & Terms </Text>
             </View>
@@ -152,7 +152,7 @@ const Setting = ({ navigation }) => {
                 title="PRIVACY POLICY"
                 isDisabled={false}
                 handlePress={handlePrivacyPolicyModal}
-              />
+              /> */}
               {/* <TouchableOpacity
               style={styles.button}
               onPress={handlePrivacyPolicyModal}
@@ -178,8 +178,8 @@ const Setting = ({ navigation }) => {
               />
               <Text style={styles.buttonText}>Terms & Conditions</Text>
             </TouchableOpacity> */}
-            </View>
-          </View>
+            {/* </View>
+          </View> */}
         </View>
       </ScrollView>
     </SafeAreaView>

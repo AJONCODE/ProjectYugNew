@@ -1,4 +1,5 @@
 import { useKeepAwake } from 'expo-keep-awake';
+import { createRandomWallet } from '../services/wallet.service';
 
 import axios from 'axios';
 
@@ -115,13 +116,24 @@ const CreateWalletMnemonic = ({ navigation, route }) => {
     // setMnemonic(walletData.mnemonic.phrase);
     // setLoading(false);
 
-    const result = await axios.get(`${BaseUrl}wallet`);
+    //const result = await axios.get(`${BaseUrl}wallet`);
 
-    console.info('result.data.data.wallet: ', result.data.data.wallet);
-    console.info('result.data.data.mnemonic: ', result.data.data.mnemonic);
-    setAddress(result.data.data.wallet.address);
-    setMnemonic(result.data.data.mnemonic);
-    setPrivateKey(result.data.data.privateKey);
+    const result = await createRandomWallet();
+    const mnemonicFunction = result["_mnemonic"];
+    const mnemonicObj = mnemonicFunction();
+
+    const signingkeyFunction = result["_signingKey"];
+    const signingObj = signingkeyFunction();
+
+    console.info('result: CreateWallet', result);
+    console.info('result.address ', result.address);
+    
+    console.info('result.data.data.mnemonic: ',signingObj);
+    setAddress(result.address);
+    setMnemonic( mnemonicObj.phrase);
+    setPrivateKey(signingObj.privateKey);
+
+
     setLoading(false);
   }, []);
 

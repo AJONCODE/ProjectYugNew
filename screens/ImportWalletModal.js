@@ -137,18 +137,18 @@ const ImportWalletModal = ({ navigation, route }) => {
 
             await AsyncStorage.setItem('wallets', JSON.stringify(wallets));
 
-            const notificationToken = await AsyncStorage.getItem(
-              'notificationToken',
-            );
+            // const notificationToken = await AsyncStorage.getItem(
+            //   'notificationToken',
+            // );
 
-            await axios.put(
-              `${baseURL.fesspay_server}notification/add-address`,
-              {
-                notificationToken: JSON.parse(notificationToken),
-                address: wallet.address,
-                walletType: 'ethereum',
-              },
-            );
+            // await axios.put(
+            //   `${baseURL.fesspay_server}notification/add-address`,
+            //   {
+            //     notificationToken: JSON.parse(notificationToken),
+            //     address: wallet.address,
+            //     walletType: 'ethereum',
+            //   },
+            // );
 
             setPrivateKeyInput('');
             setImportWalletLoading(false);
@@ -183,18 +183,18 @@ const ImportWalletModal = ({ navigation, route }) => {
             // await AsyncStorage.setItem('privateKey', wallet.privateKey);
             // await AsyncStorage.setItem('address', wallet.address);
 
-            const notificationToken = await AsyncStorage.getItem(
-              'notificationToken',
-            );
+            // const notificationToken = await AsyncStorage.getItem(
+            //   'notificationToken',
+            // );
 
-            await axios.put(
-              `${baseURL.fesspay_server}notification/add-address`,
-              {
-                notificationToken: JSON.parse(notificationToken),
-                address: wallet.address,
-                walletType: 'ethereum',
-              },
-            );
+            // await axios.put(
+            //   `${baseURL.fesspay_server}notification/add-address`,
+            //   {
+            //     notificationToken: JSON.parse(notificationToken),
+            //     address: wallet.address,
+            //     walletType: 'ethereum',
+            //   },
+            // );
 
             setPrivateKeyInput('');
             setImportWalletLoading(false);

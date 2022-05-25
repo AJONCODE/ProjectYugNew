@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
+  Image,
   ActivityIndicator,
   TextInput,
   TouchableOpacity,
@@ -12,6 +13,10 @@ import {
 } from 'react-native';
 
 import React from 'react';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ethers } from 'ethers';
+import sendIcon from '../images/wallet/send.png';
 // import AppButton from '../components/AppButton';
 
 const styles = StyleSheet.create({
@@ -67,68 +72,92 @@ const styles = StyleSheet.create({
 });
 
 const WalletAssetInfoModal = ({ navigation, route }) => {
-  const { tokenName, address, balance, symbol } = route.params;
-  const [screenLoading, setScreenLoading] = React.useState(false);
-  // Accepted values: ['ALL', 'SEND', 'RECEIVED']
-  const [tokenProperty, setTokenProperty] = React.useState('ALL');
-  const [historyAll, setHistoryAll] = React.useState([
-    {
-      trxnHash: 'ab12hgjk67ghtask6',
-      date: Date.now(),
-      type: 'send',
-      amount: '8000',
-    },
-    {
-      trxnHash: 'ab12hgjk67ghtask6',
-      date: Date.now(),
-      type: 'received',
-      amount: '16000',
-    },
-  ]);
-  const [historySend, setHistorySend] = React.useState([
-    {
-      trxnHash: 'ab12hgjk67ghtask6',
-      date: Date.now(),
-      type: 'send',
-      amount: '8000',
-    },
-  ]);
-  const [historyReceived, setHistoryReceived] = React.useState([
-    {
-      trxnHash: 'ab12hgjk67ghtask6',
-      date: Date.now(),
-      type: 'received',
-      amount: '16000',
-    },
-  ]);
-  const [selectedHistory, setSelectedHistory] = React.useState([...historyAll]);
+  const { tokenName, address, balance, symbol, walletAddress } = route.params;
+  const [screenLoading, setScreenLoading] = React.useState(true);
+  const [transactionHistory, setTransactionHistory] = React.useState({});
 
-  const selectAllProperty = () => {
-    if (tokenProperty !== 'ALL') {
-      setSelectedHistory(historyAll);
-      setTokenProperty('ALL');
-    }
-  };
 
-  const selectSendProperty = () => {
-    if (tokenProperty !== 'SEND') {
-      setSelectedHistory(historySend);
-      setTokenProperty('SEND');
-    }
-  };
+  const getHistory = async () => {
+    //await AsyncStorage.removeItem('transactions');
 
-  const selectReceivedProperty = () => {
-    if (tokenProperty !== 'RECEIVED') {
-      setSelectedHistory(historyReceived);
-      setTokenProperty('RECEIVED');
+    setScreenLoading(true);
+
+    let transacData = await AsyncStorage.getItem('transactions');
+    transacData = JSON.parse(transacData);
+
+    if (transacData !== null) {
+
+      let walletTrxData = transacData[walletAddress];
+      let tokenTrxData = walletTrxData[address];
+
+      console.info('trxdata: ', tokenTrxData);
+      console.log('trx keys', Object.values(transactionHistory))
+      Object.values(transactionHistory).forEach((trxn) => {
+        console.log(trxn.date)
+      })
+
+      setTransactionHistory(transactionHistory => ({
+        ...transactionHistory,
+        ...tokenTrxData
+      }));
     }
-  };
+
+    setScreenLoading(false);
+
+  }
 
   React.useEffect(() => {
+    getHistory();
     navigation.setOptions({
       title: `${tokenName} Stats`,
     });
   }, []);
+
+
+
+  // Accepted values: ['ALL', 'SEND', 'RECEIVED']
+  //const [tokenProperty, setTokenProperty] = React.useState('ALL');
+
+  // const [historySend, setHistorySend] = React.useState([
+  //   {
+  //     trxnHash: 'ab12hgjk67ghtask6',
+  //     date: Date.now(),
+  //     type: 'send',
+  //     amount: '8000',
+  //   },
+  // ]);
+  // const [historyReceived, setHistoryReceived] = React.useState([
+  //   {
+  //     trxnHash: 'ab12hgjk67ghtask6',
+  //     date: Date.now(),
+  //     type: 'received',
+  //     amount: '16000',
+  //   },
+  // ]);
+  // const [selectedHistory, setSelectedHistory] = React.useState([...historyAll]);
+
+  // const selectAllProperty = () => {
+  //   if (tokenProperty !== 'ALL') {
+  //     setSelectedHistory(historyAll);
+  //     setTokenProperty('ALL');
+  //   }
+  // };
+
+  // const selectSendProperty = () => {
+  //   if (tokenProperty !== 'SEND') {
+  //     setSelectedHistory(historySend);
+  //     setTokenProperty('SEND');
+  //   }
+  // };
+
+  // const selectReceivedProperty = () => {
+  //   if (tokenProperty !== 'RECEIVED') {
+  //     setSelectedHistory(historyReceived);
+  //     setTokenProperty('RECEIVED');
+  //   }
+  // };
+
+
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -141,18 +170,10 @@ const WalletAssetInfoModal = ({ navigation, route }) => {
       {!screenLoading && (
         <View style={styles.container}>
           <View style={{ marginBottom: 30 }}>
+
             <Text
               style={{
-                fontSize: 25,
-                color: '#707070',
-                textAlign: 'center',
-              }}
-            >
-              {tokenName} ({symbol})
-            </Text>
-            <Text
-              style={{
-                fontSize: 25,
+                fontSize: 15,
                 color: '#707070',
                 textAlign: 'center',
               }}
@@ -161,16 +182,118 @@ const WalletAssetInfoModal = ({ navigation, route }) => {
             </Text>
             <Text
               style={{
-                fontSize: 40,
+                fontSize: 30,
                 color: '#308dd4',
                 fontWeight: '600',
                 textAlign: 'center',
               }}
             >
-              {balance}
+              {balance} {symbol}
             </Text>
           </View>
 
+          <View
+            style={{
+              flexDirection: 'row',
+              height: 50,
+              backgroundColor: '#efefef',
+              alignItems: 'center',
+              paddingHorizontal: 20,
+              marginBottom: 20
+            }}
+          >
+            <View
+              style={{
+                width: '50%',
+                alignItems: 'flex-start'
+              }}
+            >
+              <Text style={{ fontSize: 20 }}>Transaction</Text>
+            </View>
+            <View
+              style={{
+                width: '50%',
+                alignItems: 'flex-end',
+                fontSize: 30,
+              }}
+            >
+              <Text style={{ fontSize: 20 }}>Amount</Text>
+            </View>
+          </View>
+
+          {Object.keys(transactionHistory).length === 0 && (
+            <Text style={{ fontSize: 15 }}>No Transactions yet.</Text>
+          )
+          }
+
+          {Object.keys(transactionHistory).length !== 0 &&
+            Object.values(transactionHistory).map((trxn) => (
+              <View
+                key={trxn.trxnHash}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  paddingHorizontal: 20,
+                  paddingBottom:5,
+                  marginBottom: 25,
+                  borderBottomWidth : 1,
+                  borderBottomColor : 'grey',
+                  borderStyle : 'dashed'
+                }}
+              >
+                <View
+                  style={{
+                    width: '60%',
+                    alignItems: 'flex-start',
+                  }}
+                >
+
+
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: 5 
+                    }}
+                  >
+                    <Image source={sendIcon} style={{ width: 30, height: 30 , marginRight: 8}} />
+                    <Text style={{ fontSize: 20}}>Send {symbol}</Text>
+
+                  </View>
+
+
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between'
+                    }}
+                  >
+                    <Text style={{ marginRight: 15 }}>{new Date(trxn.date).toLocaleDateString()}</Text>
+                    <Text style={{ marginRight: 2, fontWeight: 'bold' }}>To : </Text>
+                    <Text>
+                      {(trxn.to).slice(0, 6)}......
+                      {(trxn.to).slice((trxn.to).length - 6, (trxn.to).length)}
+                    </Text>
+                  </View>
+
+                </View>
+                <View
+                  style={{
+                    width: '40%',
+                    alignItems: 'flex-end',
+                  }}
+                >
+                  <Text style={{ fontSize: 20, color: '#308dd4' }}>
+                    {trxn.amount} {symbol}
+                  </Text>
+                </View>
+              </View>
+            ))
+          }
+
+          {/* 
           <View
             style={{
               flexDirection: 'row',
@@ -236,46 +359,16 @@ const WalletAssetInfoModal = ({ navigation, route }) => {
                 Received
               </Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
 
-          {selectedHistory.length > 0 &&
-            selectedHistory.map((trxn) => (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  paddingHorizontal: 10,
-                  paddingVertical: 10,
-                  borderBottomWidth: 1,
-                  borderBottomColor: '#e5e5e5',
-                }}
-              >
-                <View style={{ flex: 1, alignItems: 'flex-start' }}>
-                  <Text style={{ fontSize: 20 }}>{trxn.trxnHash}</Text>
-                  <Text style={{ fontSize: 15, color: '#cecece' }}>
-                    {new Date(trxn.date).toLocaleString()}
-                  </Text>
-                </View>
-                <View style={{ flex: 1, alignItems: 'flex-end' }}>
-                  <Text
-                    style={[
-                      trxn.type === 'send' && styles.sendTrxn,
-                      trxn.type === 'received' && styles.receivedTrxn,
-                      { fontSize: 28 },
-                    ]}
-                  >
-                    {trxn.type === 'send' && '+'}
-                    {trxn.type === 'received' && '-'}
-                    {trxn.amount}
-                  </Text>
-                </View>
-              </View>
-            ))}
+
+          
 
           {/* <View
             style={{
               flexDirection: 'row',
               flex: 1,
-              alignItems: 'flex-end',
+              alignItems: 'flex-end', 
               //   justifyContent: 'flex-end',
             }}
           >

@@ -17,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import { ethers } from 'ethers';
 import etherscan from 'etherscan-api';
+import { tokenABI } from '../utils/token.abi';
 
 const styles = StyleSheet.create({
   containerColor: {
@@ -73,26 +74,27 @@ const AddTokenModal = ({ navigation, route }) => {
         setAddTokenLoading(true);
         let wallet = new ethers.Wallet(privateKey);
         // console.log('add token hit!');
-        const etherscanApi = await etherscan.init(
-          'Y52U8S5ZIII2Q58527WT5U3NRPNMMFSPQK',
-        );
-        // ABI
-        let contractAbiFragmentResponse = await etherscanApi.contract.getabi(
-          addressInput.trim(),
-        );
+        // const etherscanApi = await etherscan.init(
+        //   'Y52U8S5ZIII2Q58527WT5U3NRPNMMFSPQK',
+        // );
+        // // ABI
+        // let contractAbiFragmentResponse = await etherscanApi.contract.getabi(
+        //   addressInput.trim(),
+        // );
 
-        const contractAbiFragment = await JSON.parse(
-          contractAbiFragmentResponse.result,
-        );
+        // const contractAbiFragment = await JSON.parse(
+        //   contractAbiFragmentResponse.result,
+        // );
 
         // contract
+        const bscProvider = await new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545/', { name: 'binance-testnet', chainId: 97 })
         const provider = ethers.getDefaultProvider('homestead');
-        wallet = wallet.connect(provider);
-        const contract = new ethers.Contract(
-          addressInput.trim(),
-          contractAbiFragment,
-          wallet,
-        );
+        wallet = wallet.connect(bscProvider);
+        // const contract = new ethers.Contract(
+        //   addressInput.trim(),
+        //   tokenABI,
+        //   wallet,
+        // );
         // new ethers.Contract(addressInput, contractAbiFragment, wallet);
 
         const tokenArrObj =

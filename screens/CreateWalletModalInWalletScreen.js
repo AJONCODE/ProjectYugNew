@@ -42,33 +42,6 @@ const CreateWalletModalInWalletScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={[styles.container, styles.containerColor]}>
-        <View style={styles.walletContainer}>
-          <View style={styles.infoDiv}>
-            <Text style={{ fontSize: 15, color: '#4297d7' }}>
-              Here you can create your very own Yug wallet!
-            </Text>
-          </View>
-
-          <AppButton
-            title="CREATE Yug WALLET"
-            isDisabled={false}
-            handlePress={() =>
-              navigation.navigate('CreateFesschainWalletScreen')
-            }
-            loading={false}
-            loadingText="CREATING Yug WALLET"
-          />
-
-          <AppButton
-            title="IMPORT Yug WALLET"
-            isDisabled={false}
-            handlePress={() =>
-              navigation.navigate('FesschainImportWalletNameModal')
-            }
-            loading={false}
-            loadingText="IMPORTING Yug WALLET"
-          />
-        </View>
 
         <View style={styles.walletContainer}>
           <View style={styles.infoDiv}>
