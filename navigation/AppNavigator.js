@@ -42,6 +42,7 @@ import Wallet from '../screens/Wallet';
 import WalletInfoModal from '../screens/WalletInfoModal';
 import FesschainWalletInfoModal from '../screens/FesschainWalletInfoModal';
 import WalletAssetInfoModal from '../screens/WalletAssetInfoModal';
+import SingleWalletAllTransactions from '../screens/SingleWalletAllTransactions';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -478,6 +479,23 @@ function RootStackNavigator() {
             },
           }}
         />
+
+        <RootStack.Screen
+          name="AllTransactions"
+          component={SingleWalletAllTransactions}
+          options={{
+            headerShown: true,
+            headerBackTitleVisible: false,
+            headerStyle: {
+              backgroundColor: '#1172a1',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+          }}
+        />
+
 
         <RootStack.Screen
           name="Chat"

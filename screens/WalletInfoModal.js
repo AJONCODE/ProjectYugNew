@@ -32,7 +32,7 @@ import { tokenABI } from '../utils/token.abi';
 
 import send from '../images/wallet/send.png';
 import receive from '../images/wallet/receive.png';
-import chat from '../images/wallet/chat.png';
+import chat from '../images/wallet/sendrec.png';
 import ethereum from '../images/wallet/eth.png';
 import bsc from '../images/wallet/binance-logo.png';
 
@@ -492,18 +492,18 @@ const WalletInfoModal = ({ navigation, route }) => {
               <Text style={{ color: '#4e4e4e' }}>RECEIVE</Text>
             </TouchableOpacity>
 
-            {/* <TouchableOpacity
-              style={{ flex: 1, alignItems: 'center' }}
+            <TouchableOpacity
+              style={{ flex: 1, alignItems: 'center' ,marginTop : 15}}
               onPress={() =>
-                navigation.navigate('Chat', {
-                  address,
-                  name: walletName,
+                navigation.navigate('AllTransactions', {
+                  walletAddress : address,
+                  privateKey : privateKey
                 })
               }
             >
-              <Image source={chat} style={{ width: 70, height: 70 }} />
-              <Text style={{ color: '#4e4e4e' }}>CHAT</Text>
-            </TouchableOpacity> */}
+              <Image source={chat} style={{ width: 50, height: 50, marginBottom : 5 }} />
+              <Text style={{ color: '#4e4e4e' }}>ALL TRXNS</Text>
+            </TouchableOpacity>
           </View>
 
           <View
@@ -548,8 +548,9 @@ const WalletInfoModal = ({ navigation, route }) => {
 
           {!fetchTokenListOptionsLoading &&
             tokenListOptions.length > 0 &&
-            tokenListOptions.map((token) => (
+            tokenListOptions.map((token,index) => (
               <TouchableOpacity
+              key={index}
                 onPress={() => redirectToWalletAssetInfoScreen(token)}
               >
                 <View

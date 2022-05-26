@@ -100,6 +100,7 @@ const Wallet = ({ navigation }) => {
 
   useFocusEffect(
     React.useCallback(() => {
+      //await AsyncStorage.removeItem('transactions');
       fetchWalletInfo();
     }, []),
   );

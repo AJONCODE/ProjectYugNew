@@ -290,12 +290,13 @@ const TransferSelectiveTokenModal = ({ navigation, route }) => {
           let obj = {};
           let trxn = {};
 
-          trxn[transHash] = {  
+          trxn[transHash] = {
             from: walletAddress,
             to: targetAddressInput,
             trxnHash: tx.hash,
             amount: amount,
             date: Date.now(),
+            token : tokenAddress
           }; //transaction object to be stored against a transaction hash as key
 
           obj[tokenAddress] = { ...trxn };
@@ -306,20 +307,27 @@ const TransferSelectiveTokenModal = ({ navigation, route }) => {
 
           let trxnForAsset = trxn[tokenAddress]; //get the existing transaction object for a particular token
 
+          if (trxnForAsset === undefined) {
+            trxnForAsset = {};
+        }
+
           trxnForAsset[transHash] = {
             from: walletAddress,
             to: targetAddressInput,
             trxnHash: tx.hash,
             amount: amount,
             date: Date.now(),
+            token : tokenAddress
           };
 
           obj[tokenAddress] = { ...trxnForAsset }; //add to the existing transaction object for a particular token
           trxns[walletAddress] = { ...obj }; //add to the existing transaction object for a particular wallet
+
+          console.log('trxn log2 :', trxns);
         }
 
 
-        console.log('trxn log1 :', trxns);
+
 
         await AsyncStorage.setItem('transactions', JSON.stringify(trxns));
 
